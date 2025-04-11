@@ -1,0 +1,22 @@
+# Python virtual environment
+.assistant/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Google API credentials
+credentials.json
+token.pickle
+
+# Environment variables
+.env
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Temporary files
+*.swp
+*~
+.DS_Store
