@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Create a new conda environment
-conda create -y -n latentsync python=3.10.13
-conda activate latentsync
+# # Create a new conda environment
+# conda create -y -n latentsync python=3.10.13
+# conda activate latentsync
 
 # Install ffmpeg
 conda install -y -c conda-forge ffmpeg
