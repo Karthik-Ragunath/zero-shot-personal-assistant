@@ -39,6 +39,17 @@
             "args": [
                 "--video=${workspaceFolder}/mavi-apis/generated_video.mp4",
             ]
-        }
+        },
+        {
+            "name": "Transcribe Audio",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mavi-apis/transcribe_audio.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/mavi-apis",
+            "args": [
+                "--video-no=mavi_video_566070574351257600"
+            ]
+        }   
     ]
 }
