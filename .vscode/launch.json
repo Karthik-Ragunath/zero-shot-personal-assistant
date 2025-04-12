@@ -25,8 +25,9 @@
             "cwd": "${workspaceFolder}/mavi-apis",
             "args": [
                 // "--input=${workspaceFolder}/csm/audio.wav", 
-                "--input=${workspaceFolder}/LatentSync/assets/demo1_audio.wav",
-                "--output=${workspaceFolder}/mavi-apis/generated_video.mp4"
+                // "--input=${workspaceFolder}/LatentSync/assets/demo1_audio.wav",
+                "--input=${workspaceFolder}/mavi-apis/meeting-reschedule-audio.wav",
+                "--output=${workspaceFolder}/mavi-apis/meeting_reschedule_video.mp4"
             ]
         },
         {
@@ -37,7 +38,9 @@
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/mavi-apis",
             "args": [
-                "--video=${workspaceFolder}/mavi-apis/generated_video.mp4",
+                // "--video=${workspaceFolder}/mavi-apis/generated_video.mp4",
+                // "--video=${workspaceFolder}/mavi-apis/meeting_reschedule_video.mp4"
+                "--video=${workspaceFolder}/mavi-apis/meeting_question_video.mp4"
             ]
         },
         {
