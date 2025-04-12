@@ -1,11 +1,45 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const url = require('url');
 
 const PORT = 8080;
+const UPLOAD_DIR = path.join(__dirname, 'uploads');
 
 const server = http.createServer((req, res) => {
-  // Handle only GET requests
+  // Check if this is a POST request to save audio
+  if (req.method === 'POST' && req.url === '/save-audio') {
+    let data = [];
+    
+    req.on('data', chunk => {
+      data.push(chunk);
+    });
+    
+    req.on('end', () => {
+      const buffer = Buffer.concat(data);
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `recording-${timestamp}.webm`;
+      const filePath = path.join(UPLOAD_DIR, filename);
+      
+      fs.writeFile(filePath, buffer, (err) => {
+        if (err) {
+          console.error('Error saving file:', err);
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ success: false, error: 'Error saving file' }));
+        } else {
+          console.log(`File saved: ${filename}`);
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ success: true, filename }));
+        }
+      });
+    });
+    
+    return;
+  }
+  
+  // Handle GET requests
   if (req.method !== 'GET') {
     res.statusCode = 405;
     res.end('Method Not Allowed');
@@ -71,7 +105,7 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}/`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running at http://0.0.0.0:${PORT}/`);
   console.log(`Press Ctrl+C to stop the server`);
 });

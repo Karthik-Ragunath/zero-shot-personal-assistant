@@ -45,6 +45,12 @@
         #stopButton:hover, #saveButton:hover {
             background-color: #d32f2f;
         }
+        #saveServerButton {
+            background-color: #2196F3;
+        }
+        #saveServerButton:hover {
+            background-color: #0b7dda;
+        }
         #visualizer {
             width: 100%;
             height: 60px;
@@ -75,13 +81,27 @@
         }
         #recordingsList .recording-item {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
             background-color: #fff;
             padding: 10px;
             border-radius: 4px;
             margin-bottom: 10px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .recording-item .recording-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .recording-item .server-saved {
+            color: #2196F3;
+            font-size: 14px;
+            margin-top: 5px;
+            padding: 3px 6px;
+            background-color: rgba(33, 150, 243, 0.1);
+            border-radius: 3px;
+            align-self: flex-start;
         }
     </style>
 </head>
@@ -89,7 +109,7 @@
     <div class="container">
         <h1>Microphone Access</h1>
         
-        <p>This page allows you to request microphone permissions, record audio, and save it to your computer.</p>
+        <p>This page allows you to request microphone permissions, record audio, and save it to your computer or to the server.</p>
         
         <canvas id="visualizer"></canvas>
         
@@ -98,6 +118,7 @@
             <button id="startButton" disabled>Start Recording</button>
             <button id="stopButton" disabled>Stop Recording</button>
             <button id="saveButton" disabled>Save Recording</button>
+            <button id="saveServerButton" disabled>Save to Server</button>
         </div>
         
         <div id="statusDiv" class="status not-recording">
@@ -126,6 +147,7 @@
         const startButton = document.getElementById('startButton');
         const stopButton = document.getElementById('stopButton');
         const saveButton = document.getElementById('saveButton');
+        const saveServerButton = document.getElementById('saveServerButton');
         const statusDiv = document.getElementById('statusDiv');
         const recordingsList = document.getElementById('recordingsList');
         
@@ -184,6 +206,7 @@
                 // Update UI
                 startButton.disabled = false;
                 saveButton.disabled = false;
+                saveServerButton.disabled = false;
                 statusDiv.textContent = 'Status: Recording stopped. Ready to save.';
                 statusDiv.className = 'status not-recording';
                 
@@ -197,7 +220,9 @@
                 const recordingItem = document.createElement('div');
                 recordingItem.className = 'recording-item';
                 recordingItem.innerHTML = `
-                    <span>Recording ${new Date().toLocaleTimeString()}</span>
+                    <div class="recording-header">
+                        <span>Recording ${new Date().toLocaleTimeString()}</span>
+                    </div>
                     <audio controls src="${audioUrl}"></audio>
                 `;
                 recordingsList.appendChild(recordingItem);
@@ -210,6 +235,7 @@
             startButton.disabled = true;
             stopButton.disabled = false;
             saveButton.disabled = true;
+            saveServerButton.disabled = true;
             statusDiv.textContent = 'Status: Recording...';
             statusDiv.className = 'status recording';
         });
@@ -236,6 +262,40 @@
             downloadLink.href = URL.createObjectURL(audioBlob);
             downloadLink.download = filename;
             downloadLink.click();
+        });
+        
+        // Save recording to server
+        saveServerButton.addEventListener('click', async () => {
+            if (!audioBlob) {
+                return;
+            }
+            
+            try {
+                statusDiv.textContent = 'Status: Uploading to server...';
+                
+                // Send the audio blob to the server
+                const response = await fetch('/save-audio', {
+                    method: 'POST',
+                    body: audioBlob
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    statusDiv.textContent = `Status: File saved on server as ${result.filename}`;
+                    
+                    // Add a note to the recording item
+                    const serverNoteElement = document.createElement('div');
+                    serverNoteElement.className = 'server-saved';
+                    serverNoteElement.textContent = `Saved to server as: ${result.filename}`;
+                    recordingsList.querySelector('.recording-item:last-child').appendChild(serverNoteElement);
+                } else {
+                    statusDiv.textContent = `Status: Error saving to server: ${result.error}`;
+                }
+            } catch (error) {
+                console.error('Error saving to server:', error);
+                statusDiv.textContent = `Status: Error saving to server: ${error.message}`;
+            }
         });
         
         // Audio visualization function
