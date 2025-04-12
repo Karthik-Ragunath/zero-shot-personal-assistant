@@ -37,20 +37,41 @@ def get_todays_events():
     """Fetch and display today's events from Google Calendar."""
     service = get_calendar_service()
     
-    # Get the start and end of today in UTC format
-    today = datetime.datetime.utcnow().date()
+    # Get current local time
+    now = datetime.datetime.now()
+    
+    # Get the start and end of today in local timezone
+    # Time zone aware times with 'Z' suffix will be interpreted correctly by Google Calendar API
+    today = now.date()
     start_of_day = datetime.datetime.combine(today, datetime.time.min).isoformat() + 'Z'
     end_of_day = datetime.datetime.combine(today, datetime.time.max).isoformat() + 'Z'
     
-    print(f"Getting events for {today.strftime('%Y-%m-%d')}")
+    print(f"Getting events for {today.strftime('%Y-%m-%d')} (local time)")
+    print(f"Start time: {start_of_day}, End time: {end_of_day}")
     
-    # Call the Calendar API
+    # First, list available calendars
+    calendar_list = service.calendarList().list().execute()
+    calendars = calendar_list.get('items', [])
+    
+    if not calendars:
+        print("No calendars found.")
+        return
+    
+    print("\nAvailable calendars:")
+    for calendar in calendars:
+        print(f"- {calendar['summary']} (ID: {calendar['id']})")
+    
+    print("\nEvents from primary calendar:")
+    
+    # Call the Calendar API with more event fields
     events_result = service.events().list(
         calendarId='primary',
         timeMin=start_of_day,
         timeMax=end_of_day,
         singleEvents=True,
-        orderBy='startTime'
+        orderBy='startTime',
+        maxResults=100,  # Increase to get more events
+        fields='items(id,summary,start,end,status)'  # Only fetch needed fields
     ).execute()
     
     events = events_result.get('items', [])
@@ -61,9 +82,12 @@ def get_todays_events():
     
     # Print events as name => ID
     for event in events:
-        event_name = event['summary']
+        event_name = event.get('summary', 'Untitled Event')
         event_id = event['id']
-        print(f"{event_name} => {event_id}")
+        start_time = event['start'].get('dateTime', event['start'].get('date', 'All day'))
+        status = event.get('status', 'Unknown')
+        print(f"{event_name} [{status}] => {event_id}")
+        print(f"  Starts: {start_time}")
 
 if __name__ == '__main__':
     get_todays_events()
