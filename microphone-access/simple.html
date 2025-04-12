@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Microphone Test</title>
+    <style>
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        button {
+            padding: 10px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+        #status {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Microphone Test</h1>
+    <p>This is a minimal test for microphone access that can be opened directly in your browser without a server.</p>
+    
+    <button id="requestPermission">Request Microphone Access</button>
+    <button id="startRecording" disabled>Start Recording</button>
+    <button id="stopRecording" disabled>Stop Recording</button>
+    <button id="download" disabled>Download Recording</button>
+    
+    <div id="status">Status: Waiting for microphone access</div>
+    
+    <div id="recordings"></div>
+    
+    <script>
+        // DOM elements
+        const requestBtn = document.getElementById('requestPermission');
+        const startBtn = document.getElementById('startRecording');
+        const stopBtn = document.getElementById('stopRecording');
+        const downloadBtn = document.getElementById('download');
+        const statusDiv = document.getElementById('status');
+        const recordingsDiv = document.getElementById('recordings');
+        
+        // Global variables
+        let mediaRecorder;
+        let audioChunks = [];
+        let audioBlob;
+        let audioUrl;
+        
+        // Request microphone access
+        requestBtn.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                statusDiv.textContent = 'Status: Microphone access granted!';
+                requestBtn.disabled = true;
+                startBtn.disabled = false;
+                
+                // Setup MediaRecorder
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.addEventListener('dataavailable', (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                });
+                
+                mediaRecorder.addEventListener('stop', () => {
+                    audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    audioUrl = URL.createObjectURL(audioBlob);
+                    
+                    const audioElement = document.createElement('audio');
+                    audioElement.controls = true;
+                    audioElement.src = audioUrl;
+                    
+                    recordingsDiv.innerHTML = '<h3>Recording Preview:</h3>';
+                    recordingsDiv.appendChild(audioElement);
+                    
+                    statusDiv.textContent = 'Status: Recording complete';
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    downloadBtn.disabled = false;
+                });
+                
+            } catch (error) {
+                statusDiv.textContent = `Status: Error accessing microphone: ${error.message}`;
+                console.error('Error accessing microphone:', error);
+            }
+        });
+        
+        // Start recording
+        startBtn.addEventListener('click', () => {
+            audioChunks = [];
+            mediaRecorder.start();
+            
+            statusDiv.textContent = 'Status: Recording in progress...';
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            downloadBtn.disabled = true;
+        });
+        
+        // Stop recording
+        stopBtn.addEventListener('click', () => {
+            mediaRecorder.stop();
+        });
+        
+        // Download recording
+        downloadBtn.addEventListener('click', () => {
+            const downloadLink = document.createElement('a');
+            downloadLink.href = audioUrl;
+            downloadLink.download = `recording-${new Date().toISOString()}.webm`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        });
+    </script>
+</body>
+</html>

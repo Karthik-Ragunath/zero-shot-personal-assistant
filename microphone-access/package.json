@@ -1,0 +1,11 @@
+{
+  "name": "microphone-access",
+  "version": "1.0.0",
+  "description": "A minimal web application for microphone access, recording, and saving audio",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "MIT"
+}
