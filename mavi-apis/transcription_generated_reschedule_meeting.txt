@@ -1,0 +1,1 @@
+{'code': '0000', 'msg': 'success', 'data': {'transcriptions': [{'startTime': '0', 'endTime': '6', 'content': ' Please reschedule the meeting to 9 p.m.'}], 'status': 'FINISH', 'type': 'AUDIO', 'videoNo': 'mavi_video_566085753638096896', 'taskNo': 'project_566087968918474752'}}

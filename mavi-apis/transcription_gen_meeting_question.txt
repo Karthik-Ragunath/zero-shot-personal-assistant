@@ -1,0 +1,1 @@
+{'code': '0000', 'msg': 'success', 'data': {'transcriptions': [{'startTime': '0', 'endTime': '5', 'content': ' Who else is going to be in the meeting and what will we discuss?'}], 'status': 'FINISH', 'type': 'AUDIO', 'videoNo': 'mavi_video_566085506350321664', 'taskNo': 'project_566088564127961088'}}
