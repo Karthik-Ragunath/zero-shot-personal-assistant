@@ -6,5 +6,8 @@ python -m scripts.inference \
     --inference_steps 20 \
     --guidance_scale 2.0 \
     --video_path "assets/demo1_video.mp4" \
-    --audio_path "assets/demo1_audio.wav" \
-    --video_out_path "video_out.mp4"
+    --audio_path "assets/meeting_rescheduled.wav" \
+    --video_out_path "video_out_meeting_rescheduled.mp4"
+    # --audio_path "assets/demo1_audio.wav" \
+    # --video_out_path "video_out.mp4"
+

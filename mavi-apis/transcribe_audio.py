@@ -17,7 +17,7 @@ data = {
     "videoNo": f"{video_no}",  # The video ID to transcribe  
     "type": "AUDIO",  # Specify "AUDIO" for audio-only, "VIDEO" for video-only, or "AUDIO/VIDEO" for both  
     # "callBackUri": "<CALLBACK>"  # Optional callback URL for status notifications  
-}  
+}
 
 response = requests.post(  
     "https://mavi-backend.openinterx.com/api/serve/video/subTranscription",  

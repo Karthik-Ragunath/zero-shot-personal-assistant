@@ -40,7 +40,9 @@
             "args": [
                 // "--video=${workspaceFolder}/mavi-apis/generated_video.mp4",
                 // "--video=${workspaceFolder}/mavi-apis/meeting_reschedule_video.mp4"
-                "--video=${workspaceFolder}/mavi-apis/meeting_question_video.mp4"
+                // "--video=${workspaceFolder}/mavi-apis/meeting_question_video.mp4",
+                // "--video=${workspaceFolder}/mavi-apis/meeting_question_video_h264.mp4"
+                "--video=${workspaceFolder}/mavi-apis/meeting_reschedule_video_h264.mp4"
             ]
         },
         {
@@ -51,8 +53,61 @@
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}/mavi-apis",
             "args": [
-                "--video-no=mavi_video_566070574351257600"
+                // "--video-no=mavi_video_566085753638096896" // meeting_reschedule_video_h264
+                "--video-no=mavi_video_566085506350321664" // meeting_question_video_h264
             ]
-        }   
+        },
+        {
+            "name": "Convert WAV to MP4 (H264)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mavi-apis/convert_wav_to_h264.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/mavi-apis",
+            "args": [
+                // "--input=${workspaceFolder}/mavi-apis/meeting-reschedule-audio.wav",
+                // "--output=${workspaceFolder}/mavi-apis/meeting_reschedule_video_h264.mp4"
+                "--input=${workspaceFolder}/mavi-apis/meeting-question-audio.wav",
+                "--output=${workspaceFolder}/mavi-apis/meeting_question_video_h264.mp4"
+            ]
+        },
+        {
+            "name": "List Videos",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mavi-apis/list_videos.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/mavi-apis",
+            "args": []
+        },
+        {
+            "name": "Get Transcription Task Status",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/mavi-apis/transcription_tasks.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/mavi-apis",
+            "args": [
+                // "--task-no=project_566088564127961088" // meeting_question_video_h264
+                "--task-no=project_566087968918474752" // meeting_meeting_video_h264
+            ]
+        },
+        {
+            "name": "Get Lipsync video",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/LatentSync/scripts/inference.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/LatentSync",
+            "args": [
+                "--unet_config_path=configs/unet/stage2.yaml",
+                "--inference_ckpt_path=checkpoints/latentsync_unet.pt",
+                "--inference_steps=20",
+                "--guidance_scale=2.0",
+                "--video_path=${workspaceFolder}/LatentSync/meeting_scheduled_video.mp4",
+                "--audio_path=${workspaceFolder}/mavi-apis/meeting_scheduled.wav",
+                "--video_out_path=${workspaceFolder}/LatentSync/meeting_scheduled_video_lipsync.mp4"
+            ]
+        }
     ]
 }
